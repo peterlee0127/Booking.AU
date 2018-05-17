@@ -61,7 +61,7 @@
         });
 
         //可預約時段
-        var availableTimespans = ["T14:00",  "T15:00", "T16:00"];
+        var availableTimespans = ["T14:00", "T15:00", "T16:00"];
 
         //判斷是否可預約，加入可預約時段
         Wednesdays.forEach(Wednesday => {
@@ -93,7 +93,7 @@
               element.addClass("available")
               element.find(".fc-title").addClass("available-bg")
             }
-            else if (event.title == '另有公務行程') {
+            else if (event.title == '已預約') {
               event.title = '已預約';
               element.find(".fc-title").addClass("NonReserve-bg")
             }
@@ -129,15 +129,15 @@
             cell.html("<div class='dayTitle'>" + date.format('M/D') + "</div>");
             var minDate = moment();
             if (date < minDate) {
-              $(cell).parents('div.fc-row.fc-week.fc-widget-content').css('display','none');
-              console.log( $(cell).parents('div').find(".fc-row fc-week.fc-widget-content"))
+              $(cell).parents('div.fc-row.fc-week.fc-widget-content').css('display', 'none');
+              console.log($(cell).parents('div').find(".fc-row fc-week.fc-widget-content"))
             }
           },
           viewRender: function (currentView) {
             var minDate = moment(),
               maxDate = moment().add(2, 'months');
 
-           
+
 
             // Past
             if (minDate >= currentView.start && minDate <= currentView.end) {
@@ -158,7 +158,7 @@
               $(".fc-next-button").prop('disabled', false);
             }
 
-             $(".fc-prev-button").text("往前");
+            $(".fc-prev-button").text("往前");
             $(".fc-next-button").text("往後");
           },
 
@@ -221,12 +221,13 @@
               <div class="event">
                 <div class="content">
                   <div class="summary">
-                    <p>本系統僅提供預約14:00-17:00，為維護拜會品質，每次拜會以<span style='color:red;'>40分鐘</span>為單位。</p>
+                    <p>本系統僅提供預約14:00-17:00，為維護拜會品質，每次拜會以
+                      <span style='color:red;'>40分鐘</span>為單位。</p>
                     <p>若無法預約，可於10:00-14:00 自由前來。實際情況仍以現場為準，敬請見諒。</p>
                     <p>欲查詢空檔可參見線上行事曆
                       <a href="http://silofficehour.pdis.tw"> http://silofficehour.pdis.tw</a>
                     </p>
-                   
+
                   </div>
                 </div>
               </div>
@@ -280,10 +281,10 @@
   </div>
 
   <div class="ui modal ">
-    <i class="close icon"></i>
+   
     <div class="header">
       拜會資訊
-
+      <i class="close icon floatright" style='cursor: pointer;' onclick="$('.ui.modal').modal('hide');"></i>
     </div>
     <div class="ui form content">
       <div class="content">

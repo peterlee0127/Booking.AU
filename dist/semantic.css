@@ -33648,8 +33648,8 @@ select.ui.dropdown {
   }
 
   .ui.modal > .close {
-    top: 0.5rem !important;
-    right: 0.5rem !important;
+    top: 0.5rem ;
+    right: 0.5rem ;
   }
 
   /*rtl:ignore*/
