@@ -61,7 +61,7 @@
         });
 
         //可預約時段
-        var availableTimespans = ["T14:00", "T14:50", "T15:40", "T16:30"];
+        var availableTimespans = ["T14:00",  "T15:00", "T16:00"];
 
         //判斷是否可預約，加入可預約時段
         Wednesdays.forEach(Wednesday => {
@@ -70,7 +70,7 @@
               objEvent = {
                 title: "可預約",
                 start: moment(moment(Wednesday).format("YYYY-MM-DD") + Timespan + ":00+0800"),
-                end: moment(moment(moment(Wednesday).format("YYYY-MM-DD") + Timespan + ":00+0800").add(30, 'minutes').format("YYYY-MM-DDTHH:mm")),
+                end: moment(moment(moment(Wednesday).format("YYYY-MM-DD") + Timespan + ":00+0800").add(40, 'minutes').format("YYYY-MM-DDTHH:mm")),
                 color: '#fff',
                 textColor: '#000',
                 available: true
@@ -221,11 +221,12 @@
               <div class="event">
                 <div class="content">
                   <div class="summary">
-                    <p> 本系統僅提供預約14:00-17:00</p>
-                    <p>拜會說明和行事曆可參見
+                    <p>本系統僅提供預約14:00-17:00，為維護拜會品質，每次拜會以<span style='color:red;'>40分鐘</span>為單位。</p>
+                    <p>若無法預約，可於10:00-14:00 自由前來。實際情況仍以現場為準，敬請見諒。</p>
+                    <p>欲查詢空檔可參見線上行事曆
                       <a href="http://silofficehour.pdis.tw"> http://silofficehour.pdis.tw</a>
                     </p>
-                    <p> 實際情況仍以現場為準，敬請見諒</p>
+                   
                   </div>
                 </div>
               </div>
