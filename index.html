@@ -281,7 +281,7 @@
   </div>
 
   <div class="ui modal ">
-   
+
     <div class="header">
       拜會資訊
       <i class="close icon floatright" style='cursor: pointer;' onclick="$('.ui.modal').modal('hide');"></i>
@@ -310,9 +310,22 @@
           <input type="text" id="visitor_dept" placeholder="單位名稱">
         </div>
         <div class="field">
+          <label>記錄方式</label>
+          <input type="radio" id='radio_record1' name="record" value='錄影'>
+          <label style='display: inline-table;' for="radio_record1">錄影</label>
+
+          <input type="radio" id='radio_record2' name="record" value='錄音'>
+          <label style='display: inline-table;' for="radio_record2">錄音</label>
+          
+          <input type="radio" id='radio_record3' name="record" value='逐字稿'>
+          <label style='display: inline-table;' for="radio_record3">逐字稿</label>
+
+        </div>
+        <div class="field">
           <label>拜會內容說明</label>
           <textarea rows="3" id="visitor_description"></textarea>
         </div>
+
         <div class="field floatright">
           <div class="ui clear button">清除</div>
           <div class="ui positive right labeled icon submit button" onclick="submitbooking()">
@@ -357,7 +370,7 @@
             "start": $('#selectStart').text(),
             "username": $('#visitor_name').val(),
             "email": $('#visitor_email').val(),
-            "description": $('#visitor_description').val(),
+            "description": $('#visitor_description').val()+"  記錄方式："+ $("input:radio[name ='record']:checked").val(),
             "department": $('#visitor_dept').val(),
             "name": $('#visitor_name').val() + " 預約拜會"
           })
@@ -441,7 +454,14 @@
               prompt: '請輸入拜會內容說明'
             }
           ]
-        }
+        },
+        record:{
+        	identifier: 'record',
+          rules: [{
+            type: 'checked',
+            prompt: '請選擇記錄方式'
+          }]
+        },
       }
     });
 
