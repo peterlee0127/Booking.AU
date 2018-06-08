@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+<html lang="{{ page.lang | default: site.lang | default: 'en' }}">
+
+	
+<script src="../js/cookie.js"></script>
+
+	{% include head.html %}
+
+
+<body>
+	{{ content }}
+</body>
+<script type="text/javascript">
+	//set Lng
+	var lng = getCookie('Lng');
+	if (lng == null) {
+		setCookie('Lng', navigator.language || navigator.userLanguage, 30);
+		lng = navigator.language || navigator.userLanguage
+	}
+
+
+	if (lng == 'zh-TW') {
+		if (window.location.pathname.toLowerCase() != '/zh/')
+			window.location = "/zh/";
+	} else {
+		if (window.location.pathname.toLowerCase() != '/en/')
+			window.location = "/en/";
+	}
+</script> 
+</html>

@@ -1,0 +1,13 @@
+title: Booking.Au
+author: shbhsu
+email: shbhsu@gmail.com
+lang: zh-TW
+description: Booking.Au
+ 
+baseurl: "" # the subpath of your site, e.g. /blog
+
+
+permalink: /:categories/:title/
+sass:
+  style: compressed
+

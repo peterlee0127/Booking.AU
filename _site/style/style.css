@@ -1,0 +1,39 @@
+.available {
+    cursor: pointer;
+
+  }
+
+  .floatright {
+    float: right;
+  }
+
+  .fc-day-number{
+    visibility: hidden;
+  }
+  .dayTitle
+  {
+    font-size: 26px;
+    padding: 3px;
+    font-weight: bold;
+  }
+  .fc-content{
+    font-size: 18px;
+  }
+  .fc-widget-header
+  {
+    padding: 6px;
+    font-size: 20px;
+  }
+  .fc-title
+  {
+    padding: 0 10px 0 10px;
+  }
+  .available-bg{
+    background:#9bf2f0;
+  }
+  .Reserved-bg{
+    background: #dedfe0;
+  }
+  .NonReserve-bg{
+    background: #ffc4cd;
+  }

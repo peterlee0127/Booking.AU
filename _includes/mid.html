@@ -1,0 +1,455 @@
+<!-- mid -->
+
+
+
+
+<script>
+	$(function () {
+
+		BindData();
+	});
+
+
+	function BindData() {
+		var objEvents = [];
+		$('#loading').css("display", "block")
+		//兩天後~四個月
+		var Wednesdays = getWednesday(3, new Date(moment().add(2, 'days')).getDate());
+
+		//取得行程
+		var settings = {
+			"crossDomain": true,
+			"url": "https://aucal.pdis.nat.gov.tw/getReserve",
+			"method": "GET",
+		}
+
+		$.ajax(settings).done(function (response) {
+			//console.log(response);
+			var objBooking = (response);
+			var objEvent = {
+
+			};
+
+			var eventTimes = [];
+
+			objBooking.reservations.forEach(reservation => {
+
+
+				objEvent = {
+					date: moment(reservation.bufferedStartDate).format("YYYY-MM-DD"),
+					title: reservation.title=="已預約"?'{{site.data.i18n[lang].reserved}}':reservation.title,
+					start: moment(reservation.bufferedStartDate, "YYYY-MM-DDTHH:mm").add(8, 'hours'),
+					end: moment(reservation.bufferedEndDate, "YYYY-MM-DDTHH:mm").add(8, 'hours'),
+					color: '#fff',
+					textColor: '#000',
+					available: false
+				}
+				eventTimes.push(moment(reservation.bufferedStartDate, "YYYY-MM-DDTHH:mm").add(8, 'hours').format("YYYY-MM-DDTHH:mm"));
+				objEvents.push(objEvent);
+
+
+			});
+
+			//可預約時段
+			var availableTimespans = ["T14:00", "T15:00", "T16:00"];
+
+			//判斷是否可預約，加入可預約時段
+			Wednesdays.forEach(Wednesday => {
+				availableTimespans.forEach(Timespan => {
+					if ($.inArray((moment(Wednesday).format("YYYY-MM-DD") + Timespan), eventTimes) == -1) {
+						objEvent = {
+							title: "{{site.data.i18n[lang].available}}",
+							start: moment(moment(Wednesday).format("YYYY-MM-DD") + Timespan + ":00+0800"),
+							end: moment(moment(moment(Wednesday).format("YYYY-MM-DD") + Timespan + ":00+0800").add(40, 'minutes').format("YYYY-MM-DDTHH:mm")),
+							color: '#fff',
+							textColor: '#000',
+							available: true
+						}
+
+						objEvents.push(objEvent);
+					}
+				});
+			});
+
+
+
+
+			//init
+			$('#calendar').fullCalendar('destroy');
+			$('#calendar').fullCalendar({
+				eventRender: function (event, element) {
+
+					if (event.available) {
+
+						element.find(".fc-title").append("<i class='edit icon ' style='padding-left:10px;'></i>");
+						element.addClass("available")
+						element.find(".fc-title").addClass("available-bg")
+					}
+					else if (event.title == '{{site.data.i18n[lang].reserved}}') {
+						event.title = '{{site.data.i18n[lang].reserved}}';
+						element.find(".fc-title").addClass("NonReserve-bg")
+					}
+					else {
+
+						element.find(".fc-title").addClass("Reserved-bg")
+					}
+				},
+				eventClick: function (calEvent, jsEvent, view) {
+
+					if (calEvent.available) {
+						$('.ui.modal').modal('show');
+						//$('.ui.form').form('reset');
+						$('.ui.error.message').text('');
+						$('#selectStart').text(moment(calEvent.start).format("YYYY-MM-DD HH:mm Z"));
+						$('#selectEnd').text(moment(calEvent.end).format("YYYY-MM-DD HH:mm Z"));
+
+					}
+				},
+				// header: {
+				//   left: 'prev,next today',
+				//   center: 'title',
+				//   right: 'month,basicWeek,basicDay'
+				// },
+				buttonText: {
+					today: '{{site.data.i18n[lang].today}}',
+					month: '{{site.data.i18n[lang].month}}',
+					week: '{{site.data.i18n[lang].week}}',
+					day: '{{site.data.i18n[lang].day}}',
+					list: '{{site.data.i18n[lang].list}}'
+				},
+				dayRender: function (date, cell) {
+					cell.html("<div class='dayTitle'>" + date.format('M/D') + "</div>");
+					var minDate = moment();
+					if (date < minDate) {
+						$(cell).parents('div.fc-row.fc-week.fc-widget-content').css('display', 'none');
+						console.log($(cell).parents('div').find(".fc-row fc-week.fc-widget-content"))
+					}
+				},
+				viewRender: function (currentView) {
+					var minDate = moment(),
+						maxDate = moment().add(2, 'months');
+
+
+
+					// Past
+					if (minDate >= currentView.start && minDate <= currentView.end) {
+						$(".fc-prev-button").prop('disabled', true);
+						$(".fc-prev-button").addClass('fc-state-disabled');
+					}
+					else {
+						$(".fc-prev-button").removeClass('fc-state-disabled');
+						$(".fc-prev-button").prop('disabled', false);
+					}
+					// Future
+					if (maxDate >= currentView.start && maxDate <= currentView.end) {
+						$(".fc-next-button").prop('disabled', true);
+						$(".fc-next-button").addClass('fc-state-disabled');
+					} else {
+
+						$(".fc-next-button").removeClass('fc-state-disabled');
+						$(".fc-next-button").prop('disabled', false);
+					}
+
+					$(".fc-prev-button").text("{{site.data.i18n[lang].prev}}");
+					$(".fc-next-button").text("{{site.data.i18n[lang].next}}");
+				},
+
+
+				monthNames: ['{{site.data.i18n[lang].January}}', '{{site.data.i18n[lang].February}}', '{{site.data.i18n[lang].March}}', '{{site.data.i18n[lang].April}}', '{{site.data.i18n[lang].May}}', '{{site.data.i18n[lang].June}}', '{{site.data.i18n[lang].July}}', '{{site.data.i18n[lang].August}}', '{{site.data.i18n[lang].September}}', '{{site.data.i18n[lang].October}}', '{{site.data.i18n[lang].November}}', '{{site.data.i18n[lang].December}}'],
+				dayNamesShort: ['星期日', '星期一', '星期二', '{{site.data.i18n[lang].Wednesday}}', '星期四', '星期五', '星期六'],
+				navLinks: false,
+				defaultDate: new Date(),
+				defaultView: 'month',
+				height: 'auto',
+				eventLimit: 6,
+				eventBackgroundColor: '#074d71',
+				timeFormat: 'h:mmt',
+				hiddenDays: [1, 2, 4, 5, 6, 0],
+				editable: false,
+				// eventLimit: true, // allow "more" link when too many events
+				validRange: {
+					start: new Date(),
+					end: '2018-06-01'
+				},
+				events: objEvents
+			});
+
+			$('#loading').css("display", "none")
+		});
+
+	}
+
+
+
+</script>
+
+
+
+
+<div class="ui main container" style="padding-top: 100px;">
+	<div class="ui grid">
+		<div class=" sixteen wide column">
+
+			<div class="ui  card" style="width: 100%;">
+				<div class="content">
+					<div class="header">
+						<i class="fc-icon-left-double-arrow"></i> {{site.data.i18n[lang].Precautions}}</div>
+				</div>
+				<div class="content">
+					<div class="ui small feed">
+						<div class="event">
+							<div class="content">
+								<div class="summary">
+										{{site.data.i18n[lang].Announcement}}
+
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class=" ten wide column">
+
+		</div>
+
+	</div>
+	<div class="ui grid">
+
+		<div class=" sixteen wide column ">
+			<div id="calendar" style="font-size: 16px "></div>
+		</div>
+
+	</div>
+</div>
+
+
+
+<div class="ui segment" id="loading" style="position: fixed;
+	  height: 100%;
+	  width: 100%;
+	  top: 0px;
+	  z-index: 99;
+	  display:none;
+	  opacity: 0.6;">
+	<div class="ui active dimmer">
+		<div class="ui medium text loader">Loading</div>
+	</div>
+	<p></p>
+	<p></p>
+</div>
+
+<div class="ui modal ">
+
+	<div class="header">
+		{{site.data.i18n[lang].VisitInformation}}
+		<i class="close icon floatright" style='cursor: pointer;' onclick="$('.ui.modal').modal('hide');"></i>
+	</div>
+	<div class="ui form content">
+		<div class="content">
+
+			<div class="ui error message"></div>
+			<div class="field">
+				<label>{{site.data.i18n[lang].visitTimespan}}</label>
+
+				<span id="selectStart"></span> ～
+				<div id="selectEnd"></div>
+
+			</div>
+			<div class="field">
+				<label>{{site.data.i18n[lang].visitName}}</label>
+				<input type="text" id="visitor_name" placeholder="{{site.data.i18n[lang].visitName}}">
+			</div>
+			<div class="field">
+				<label>Email</label>
+				<input type="text" id="visitor_email" placeholder="Email">
+			</div>
+			<div class="field">
+				<label>{{site.data.i18n[lang].visitDept}}</label>
+				<input type="text" id="visitor_dept" placeholder="{{site.data.i18n[lang].visitDept}}">
+			</div>
+			<div class="field">
+				<label>{{site.data.i18n[lang].RecordType}}</label>
+				<input type="radio" id='radio_record1' name="record" value='錄影'>
+				<label style='display: inline-table;' for="radio_record1">{{site.data.i18n[lang].RecordVideo}}</label>
+
+				<input type="radio" id='radio_record2' name="record" value='錄音'>
+				<label style='display: inline-table;' for="radio_record2">{{site.data.i18n[lang].RecordVoice}}</label>
+
+				<input type="radio" id='radio_record3' name="record" value='逐字稿'>
+				<label style='display: inline-table;' for="radio_record3">{{site.data.i18n[lang].RecordText}}</label>
+
+			</div>
+			<div class="field">
+				<label>{{site.data.i18n[lang].VisitDesc}}</label>
+				<textarea rows="3" id="visitor_description"></textarea>
+			</div>
+
+			<div class="field floatright">
+				<div class="ui clear button">{{site.data.i18n[lang].Clear}}</div>
+				<div class="ui positive right labeled icon submit button" onclick="submitbooking()">
+						{{site.data.i18n[lang].Submit}}
+					<i class="checkmark icon"></i>
+				</div>
+			</div>
+			<div class="field floatright">
+
+				<hr/>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+
+
+
+<script>
+	function submitbooking() {
+		if (confirm('{{site.data.i18n[lang].SubmitCheck}}')) {
+			if ($('#selectEnd').text() == '' || $('#selectStart').text() == '' || $('#visitor_name').val() == '' || $('#visitor_email').val() == '' || $('#visitor_description').val() == '' || $('#visitor_dept').val() == '') {
+
+			}
+			else {
+				// Request (POST https://aucal.pdis.nat.gov.tw/reserve)
+				$('#loading').css("display", "block")
+				$('.ui.modal').modal('hide');
+				jQuery.ajax({
+					url: "https://aucal.pdis.nat.gov.tw/reserve",
+					type: "POST",
+					headers: {
+						"Content-Type": "application/json; charset=utf-8",
+					},
+					contentType: "application/json",
+					data: JSON.stringify({
+						"end": $('#selectEnd').text(),
+						"start": $('#selectStart').text(),
+						"username": $('#visitor_name').val(),
+						"email": $('#visitor_email').val(),
+						"description": $('#visitor_description').val() + "  記錄方式：" + $("input:radio[name ='record']:checked").val(),
+						"department": $('#visitor_dept').val(),
+						"name": $('#visitor_name').val() + " {{site.data.i18n[lang].Reserve}}"
+					})
+				})
+					.done(function (response, textStatus, jqXHR) {
+
+						if (response.message.indexOf("errors") >= 0) {
+							toastr.error(JSON.parse(response.message).message, '{{site.data.i18n[lang].SubmitFail}}', { timeOut: 8000 })
+						}
+						else {
+							toastr.info(JSON.parse(response.message).message, '{{site.data.i18n[lang].SubmitSuccess}}', { timeOut: 8000 })
+						}
+
+
+					})
+					.fail(function (jqXHR, textStatus, errorThrown) {
+						console.log("HTTP Request Failed");
+						toastr.error("{{site.data.i18n[lang].ErrMsg}}", 'Error', { timeOut: 5000 })
+					})
+					.always(function () {
+						/* ... */
+						$('#loading').css("display", "block");
+						BindData();
+					});
+			}
+		}
+		else {
+			return;
+		}
+
+
+
+
+
+	}
+
+</script>
+
+<script>
+
+
+	//validation
+	$('.ui.form')
+		.form({
+			fields: {
+				visitor_name: {
+					identifier: 'visitor_name',
+					rules: [
+						{
+							type: 'empty',
+							prompt: '{{site.data.i18n[lang].NameCheck}}'
+						}
+					]
+				}
+				,
+				visitor_email: {
+					identifier: 'visitor_email',
+					rules: [
+						{
+							type: 'email',
+							prompt: '{{site.data.i18n[lang].EmailCheck}}'
+						}
+					]
+				}
+				,
+				visitor_dept: {
+					identifier: 'visitor_dept',
+					rules: [
+						{
+							type: 'empty',
+							prompt: '{{site.data.i18n[lang].DeptCheck}}'
+						}
+					]
+				}
+				,
+				visitor_description: {
+					identifier: 'visitor_description',
+					rules: [
+						{
+							type: 'empty',
+							prompt: '{{site.data.i18n[lang].DescCheck}}'
+						}
+					]
+				},
+				record: {
+					identifier: 'record',
+					rules: [{
+						type: 'checked',
+						prompt: '{{site.data.i18n[lang].RecordCheck}}'
+					}]
+				},
+			}
+		});
+
+
+
+
+	//取得所有禮拜三
+	function getWednesday(monthCount, setfirstDate) {
+		var d = new Date(),
+			month = d.getMonth(),
+			Wednesdays = [];
+
+		d.setDate(setfirstDate);
+		// Get the first Wednesday in the month
+		while (d.getDay() !== 3) {
+			d.setDate(d.getDate() + 1);
+		}
+		var tmpd = new Date();
+		tmpd.setMonth(tmpd.getMonth() + monthCount);
+		var endmonth = tmpd.getMonth();
+
+		// Get all the other Wednesday in the month
+		while (d.getMonth() !== endmonth) {
+			Wednesdays.push(new Date(d.getTime()));
+			d.setDate(d.getDate() + 7);
+		}
+		return Wednesdays;
+	}
+
+</script>
+
+
+
+<!-- //mid -->
