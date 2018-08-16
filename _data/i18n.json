@@ -43,7 +43,7 @@
     "EmailCheck":"Please enter an email",
     "DescCheck":"Please enter Description",
     "RecordCheck":"Please select a record mode",
-    "Announcement":"<p>The site only provides appointments from 14:00 to 17:00. To maintain the quality of the visit, each visit is based on <span style='color:red;'>40 minutes</span>. <p>If you cannot make an appointment, you are free to come from 10:00-14:00. The actual situation depends mainly on the scene, we apologize for any inconvenience caused.</p>The online calendar:<a href='http://silofficehour.pdis.tw'> http://silofficehour.pdis.tw</a></p>",
+    "Announcement":"<p>The site only provides appointments from 14:00 to 17:00. To maintain the quality of the visit, each visit is based on <span style='color:red;'>40 minutes</span>. <p>If you cannot make an appointment, you are free to come from 10:00-14:00. The actual situation depends mainly on the scene, we apologize for any inconvenience caused.</p>The online calendar:<a href='https://silofficehour.pdis.tw'> https://silofficehour.pdis.tw</a></p>",
     "ContactUs":"Contact Us",
     "SIL":"Social Innovation Lab"
   },
@@ -91,7 +91,7 @@
     "EmailCheck":"請輸入正確的email",
     "DescCheck":"請輸入拜會內容說明",
     "RecordCheck":"請選擇記錄方式",
-    "Announcement":"<p>本系統僅提供預約14:00-17:00，為維護拜會品質，每次拜會以<span style='color:red;'>40分鐘</span>為單位。</p><p>若無法預約，可於10:00-14:00 自由前來。實際情況仍以現場為準，敬請見諒。</p><p>欲查詢空檔可參見線上行事曆<a href='http://silofficehour.pdis.tw'> http://silofficehour.pdis.tw</a></p>",
+    "Announcement":"<p>本系統僅提供預約14:00-17:00，為維護拜會品質，每次拜會以<span style='color:red;'>40分鐘</span>為單位。</p><p>若無法預約，可於10:00-14:00 自由前來。實際情況仍以現場為準，敬請見諒。</p><p>欲查詢空檔可參見線上行事曆<a href='https://silofficehour.pdis.tw'> https://silofficehour.pdis.tw</a></p>",
     "ContactUs":"聯絡我們",
     "SIL":"社會創新實驗中心"
   }
