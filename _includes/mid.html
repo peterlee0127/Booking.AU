@@ -38,8 +38,8 @@
 				objEvent = {
 					date: moment(reservation.bufferedStartDate).format("YYYY-MM-DD"),
 					title: reservation.title=="已預約"?'{{site.data.i18n[lang].reserved}}':reservation.title,
-					start: moment.utc(reservation.bufferedStartDate).add(8, 'hours'),
-					end: moment.utc(reservation.bufferedEndDate).add(8, 'hours'),
+					start: moment.utc(reservation.bufferedStartDate).local(),
+					end: moment.utc(reservation.bufferedEndDate).local(),
 					color: '#fff',
 					textColor: '#000',
 					available: false
@@ -50,26 +50,26 @@
 				let numOfSlot = Math.ceil(times/(60*60)); // 60min per slot
 
 				for(let j = 0; j < numOfSlot; j++){
-					let nstartT = moment(objEvent.start, "YYYY-MM-DDTHH:mm").add(j, 'hours');
+					let nstartT = moment(objEvent.start).add(j, 'hours');
 
-					eventTimes.push(moment(nstartT).format("YYYY-MM-DDTHH:mm"));
+					eventTimes.push(nstartT.format());
 					objEvents.push(objEvent);
 
 				}
 
 			});
 
-			//可預約時段
-			const availableTimespans = ["T14:00", "T15:00", "T16:00"];
+			//可預約時段（UTC）
+			const availableTimespans = ["T06:00:00+0000", "T07:00:00+0000", "T08:00:00+0000"];
 
 			//判斷是否可預約，加入可預約時段
 			Wednesdays.forEach(function(Wednesday) {
 				availableTimespans.forEach(function(Timespan) {
-					if ($.inArray((moment(Wednesday).format("YYYY-MM-DD") + Timespan), eventTimes) == -1) {
+					if ($.inArray((moment.utc(moment(Wednesday).format("YYYY-MM-DD") + Timespan)).local().format(), eventTimes) == -1) {
 						objEvent = {
 							title: "{{site.data.i18n[lang].available}}",
-							start: moment(moment(Wednesday).format("YYYY-MM-DD") + Timespan + ":00+0800"),
-							end: moment(moment(moment(Wednesday).format("YYYY-MM-DD") + Timespan + ":00+0800").add(40, 'minutes').format("YYYY-MM-DDTHH:mm")),
+							start: moment.utc(moment(Wednesday).format("YYYY-MM-DD") + Timespan).local(),
+							end: moment.utc(moment(Wednesday).format("YYYY-MM-DD") + Timespan).local().add(40, 'minutes'),
 							color: '#fff',
 							textColor: '#000',
 							available: true
