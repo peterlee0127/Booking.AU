@@ -38,8 +38,8 @@
 				objEvent = {
 					date: moment(reservation.bufferedStartDate).format("YYYY-MM-DD"),
 					title: reservation.title=="已預約"?'{{site.data.i18n[lang].reserved}}':reservation.title,
-					start: moment.utc(reservation.bufferedStartDate).add(8, 'hours'),
-					end: moment.utc(reservation.bufferedEndDate).add(8, 'hours'),
+					start: moment.utc(reservation.bufferedStartDate).utcOffset(480),
+					end: moment.utc(reservation.bufferedEndDate).utcOffset(480),
 					color: '#fff',
 					textColor: '#000',
 					available: false
@@ -65,11 +65,11 @@
 			//判斷是否可預約，加入可預約時段
 			Wednesdays.forEach(function(Wednesday) {
 				availableTimespans.forEach(function(Timespan) {
-					if ($.inArray((moment.utc(moment(Wednesday).format("YYYY-MM-DD") + Timespan)).add(8, 'hours').format(), eventTimes) == -1) {
+					if ($.inArray((moment.utc(moment(Wednesday).format("YYYY-MM-DD") + Timespan)).utcOffset(480).format(), eventTimes) == -1) {
 						objEvent = {
 							title: "{{site.data.i18n[lang].available}}",
-							start: moment.utc(moment(Wednesday).format("YYYY-MM-DD") + Timespan).add(8, 'hours'),
-							end: moment.utc(moment(Wednesday).format("YYYY-MM-DD") + Timespan).add(8, 'hours').add(40, 'minutes'),
+							start: moment.utc(moment(Wednesday).format("YYYY-MM-DD") + Timespan).utcOffset(480),
+							end: moment.utc(moment(Wednesday).format("YYYY-MM-DD") + Timespan).utcOffset(480).add(40, 'minutes'),
 							color: '#fff',
 							textColor: '#000',
 							available: true
