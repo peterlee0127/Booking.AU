@@ -109,7 +109,7 @@
 				eventClick: function (calEvent, jsEvent, view) {
 
 					if (calEvent.available) {
-						$('.ui.modal').modal('show');
+						$('.ui.modal.reserve').modal('show');
 						//$('.ui.form').form('reset');
 						$('.ui.error.message').text('');
 						$('#selectStart').text(moment(calEvent.start).format("YYYY-MM-DD HH:mm Z"));
@@ -134,7 +134,7 @@
 					var minDate = moment();
 					if (date < minDate) {
 						$(cell).parents('div.fc-row.fc-week.fc-widget-content').css('display', 'none');
-						console.log($(cell).parents('div').find(".fc-row fc-week.fc-widget-content"))
+						// console.log($(cell).parents('div').find(".fc-row fc-week.fc-widget-content"))
 					}
 				},
 				viewRender: function (currentView) {
@@ -251,11 +251,11 @@
 	<p></p>
 </div>
 
-<div class="ui modal ">
+<div class="ui modal reserve">
 
 	<div class="header">
 		{{site.data.i18n[lang].VisitInformation}}
-		<i class="close icon floatright" style='cursor: pointer;' onclick="$('.ui.modal').modal('hide');"></i>
+		<i class="close icon floatright" style='cursor: pointer;' onclick="$('.ui.modal.reserve').modal('hide');"></i>
 	</div>
 	<div class="ui form content">
 		<div class="content">
@@ -329,7 +329,7 @@
 			else {
 				// Request (POST https://aucal.pdis.nat.gov.tw/reserve)
 				$('#loading').css("display", "block")
-				$('.ui.modal').modal('hide');
+				$('.ui.modal.reserve').modal('hide');
 				jQuery.ajax({
 					url: "https://aucal.pdis.nat.gov.tw/reserve",
 					type: "POST",
@@ -466,6 +466,29 @@
 
 </script>
 
+<script>
+	window.onload = showWarning;
+	function showWarning() {
+		$('.ui.warning.modal').modal('show');
+	}
+  </script>
 
+
+  <div class="ui warning modal">
+	<div class="image content">
+	  <div class="description">
+		<p>
+			因應疫情發展，本辦未來將依照疫情指揮中心指引調整拜會形式。<br>
+			相關細節將公布於此行事曆:<a target="_blank" href="https://silofficehour.pdis.tw"> silofficehour.pdis.tw</a>
+			<br>已預約者將個別通知。
+		</p>
+	  </div>
+	</div>
+	<div class="actions">
+	  <div class="ui positive right labeled icon button">
+		我知道了
+	  </div>
+	</div>
+  </div>
 
 <!-- //mid -->
