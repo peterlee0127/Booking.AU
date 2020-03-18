@@ -323,6 +323,11 @@
 <script>
 	function submitbooking() {
 		if (confirm('{{site.data.i18n[lang].SubmitCheck}}')) {
+			const firstRadio = document.querySelector("#radio_record1").checked;
+			const secondRadio = document.querySelector("#radio_record3").checked;
+			if((firstRadio | secondRadio) != 1) {
+				return 
+			}
 			if ($('#selectEnd').text() == '' || $('#selectStart').text() == '' || $('#visitor_name').val() == '' || $('#visitor_email').val() == '' || $('#visitor_description').val() == '' || $('#visitor_dept').val() == '') {
 
 			}
