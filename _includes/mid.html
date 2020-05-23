@@ -16,10 +16,7 @@
 		//兩天後~四個月
 		var Wednesdays = getWednesday(4, new Date(moment().add(2, 'days')).getDate());
 		//必須與取得預約事件的結束天數一致
-		// var bookingEndDay = new Date(moment().add(90, 'days'));
-
-		// Disable any reservation after 2020-05-20.
-		var bookingEndDay = new Date("2020-05-20");
+		var bookingEndDay = new Date(moment().add(90, 'days'));
 		Wednesdays = Wednesdays.filter(function(value, index, arr){ return value <= bookingEndDay;});		
 
 		//取得行程
