@@ -130,7 +130,7 @@
 				dayRender: function (date, cell) {
 					cell.html("<div class='dayTitle'>" + date.format('M/D') + "</div>");
 					var minDate = moment();
-					if (date < minDate) {
+					if (date < minDate || date > moment(lastDate)) {
 						$(cell).parents('div.fc-row.fc-week.fc-widget-content').css('display', 'none');
 						// console.log($(cell).parents('div').find(".fc-row fc-week.fc-widget-content"))
 					}
