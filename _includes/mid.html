@@ -111,9 +111,6 @@
 				eventClick: function (calEvent, jsEvent, view) {
 
 					if (calEvent.available) {
-						// disable reserve.
-						alert('系統維護中，暫時不開放預約喔!!');
-						return;
 						$('.ui.modal.reserve').modal('show');
 						//$('.ui.form').form('reset');
 						$('.ui.error.message').text('');
