@@ -17,6 +17,10 @@
 		var Wednesdays = getWednesday(4, new Date(moment().add(2, 'days')).getDate());
 		//必須與取得預約事件的結束天數一致
 		var bookingEndDay = new Date(moment().add(90, 'days'));
+		
+		// only show to 2020-12-31
+		bookingEndDay = new Date("2020-12-31");
+		
 		Wednesdays = Wednesdays.filter(function(value, index, arr){ return value <= bookingEndDay;});		
 		let lastDate = Wednesdays.pop();
 		//取得行程
