@@ -18,7 +18,7 @@
 		//必須與取得預約事件的結束天數一致
 		var bookingEndDay = new Date(moment().add(90, 'days'));
 		// set end day to 2021-01-31
-		bookingEndDay = new Date("2021-01-31");
+		// bookingEndDay = new Date("2021-01-31");
 
 		Wednesdays = Wednesdays.filter(function(value, index, arr){ return value <= bookingEndDay;});		
 		let lastDate = Wednesdays.slice(-1)[0];
