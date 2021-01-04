@@ -18,7 +18,7 @@
 		//必須與取得預約事件的結束天數一致
 		// var bookingEndDay = new Date(moment().add(90, 'days'));
 		// set end day to 2021-03-31
-		var bookingEndDay = new Date("2021-04-01");
+		var bookingEndDay = new Date("2021-06-01");
 
 		Wednesdays = Wednesdays.filter(function(value, index, arr){ return value <= bookingEndDay;});		
 		let lastDate = Wednesdays.slice(-1)[0];
@@ -262,7 +262,6 @@
 	</div>
 	<div class="ui form content">
 		<div class="content">
-
 			<div class="ui error message"></div>
 			<div class="field" style="font-size:18px;font-weight: bold;">
 				{{site.data.i18n[lang].VisitHeaderInformation}}
@@ -277,6 +276,14 @@
 			<div class="field">
 				<label>{{site.data.i18n[lang].visitName}}</label>
 				<input type="text" id="visitor_name" placeholder="{{site.data.i18n[lang].visitName}}">
+			</div>
+			<div class="field">
+				<label>單位統編/TaxID，用於驗證預約單位</label>
+				<input type="text" id="visitor_tax_id" placeholder="單位統編/TaxID">
+			</div>
+			<div class="field">
+				<label>單位資訊</label>
+				<textarea disabled rows="3" id="visitor_info"></textarea>
 			</div>
 			<div class="field">
 				<label>Email</label>
@@ -337,6 +344,43 @@
 			if((firstRadio | secondRadio) != 1) {
 				return 
 			}
+
+			var taxID = $('#visitor_tax_id').val();
+			if(taxID == '') {
+				alert("TaxId,統編不能為空值");
+				return;
+			}else if(/\d{8}/.test(taxID)==false) {
+				alert("TaxId,統編應為8位數字");
+				return;
+			}
+
+			// Make a request for a user with a given ID
+			let url = `https://si.taiwan.gov.tw/api/orgs/data/${taxID}`;
+			axios.get(url)
+			.then(function (response) {
+				// handle success
+				let info = response.data;
+				if(info.status == true) {
+					let json = info.data;
+					$('#visitor_info').val(
+`name: ${json.name}, principal: ${json.principal}, status: ${json.status}, sdgs: ${json.sdgs}`);
+				}else {
+					$('#visitor_info').val('');
+					alert('統編驗證錯誤');
+				}
+			})
+			.catch(function (error) {
+				// handle error
+				console.log(error);
+			})
+			.then(function () {
+				// always executed
+			});
+
+
+			return;
+
+
 			if ($('#selectEnd').text() == '' || $('#selectStart').text() == '' || $('#visitor_name').val() == '' || $('#visitor_email').val() == '' || $('#visitor_description').val() == '' || $('#visitor_dept').val() == '') {
 
 			}
@@ -347,7 +391,8 @@
 				// Request (POST https://aucal.pdis.nat.gov.tw/reserve)
 				$('#loading').css("display", "block")
 				$('.ui.modal.reserve').modal('hide');
-				let url = 'https://aucal.pdis.nat.gov.tw/reserve';
+				let url = 'http://localhost:8082/reserve';
+				// let url = 'https://aucal.pdis.nat.gov.tw/reserve';
 				jQuery.ajax({
 					url: url,
 					type: "POST",
@@ -365,26 +410,25 @@
 						"department": $('#visitor_dept').val(),
 						"name": $('#visitor_name').val() + " {{site.data.i18n[lang].Reserve}}"
 					})
+				}).done(function (response, textStatus, jqXHR) {
+					if (response.message=="errors") {
+						toastr.error(JSON.parse(response.message), '{{site.data.i18n[lang].SubmitFail}}', { timeOut: 8000 })
+					}
+					else {
+						toastr.info(JSON.parse(response.message), '{{site.data.i18n[lang].SubmitSuccess}}', { timeOut: 8000 })
+					}
+
+
 				})
-					.done(function (response, textStatus, jqXHR) {
-						if (response.message=="errors") {
-							toastr.error(JSON.parse(response.message), '{{site.data.i18n[lang].SubmitFail}}', { timeOut: 8000 })
-						}
-						else {
-							toastr.info(JSON.parse(response.message), '{{site.data.i18n[lang].SubmitSuccess}}', { timeOut: 8000 })
-						}
-
-
-					})
-					.fail(function (jqXHR, textStatus, errorThrown) {
-						console.log("HTTP Request Failed");
-						toastr.error("{{site.data.i18n[lang].ErrMsg}}", 'Error', { timeOut: 5000 })
-					})
-					.always(function () {
-						/* ... */
-						$('#loading').css("display", "block");
-						BindData();
-					});
+				.fail(function (jqXHR, textStatus, errorThrown) {
+					console.log("HTTP Request Failed");
+					toastr.error("{{site.data.i18n[lang].ErrMsg}}", 'Error', { timeOut: 5000 })
+				})
+				.always(function () {
+					/* ... */
+					$('#loading').css("display", "block");
+					BindData();
+				});
 			}
 		}
 		else {
