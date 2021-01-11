@@ -350,16 +350,20 @@
 			// handle success
 			let info = response.data;
 			if(info.status == true) {
+				// can find by taxId
 				let json = info.data;
 				if(json.status=="已公開" || json.status=="已隱藏"){
+					// 已公開／已隱藏／已下架
 					let visitorInfo = `單位名稱: ${json.name}, 負責人: ${json.principal}, 狀態: ${json.status}`;
 					$('#visitor_info').val(visitorInfo);
 					callback(json);
 				}else {
-					alert(`目前社會企業狀態是已下架喔，請與社創中心聯絡`);
+					// 已下架
+					alert(`目前社會企業狀態是已下架，無法預約`);
 					callback(null);
 				}
 			}else {
+				// can't find by taxId
 				$('#visitor_info').val('');
 				alert('統編驗證錯誤');
 				callback(null);
