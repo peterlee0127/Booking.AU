@@ -336,7 +336,7 @@
 
 
 <script>
-	function checkTaxId() {
+	function checkTaxId(callback) {
 		// Make a request for a user with a given ID
 		var taxID = $('#visitor_tax_id').val();
 		if(taxID == '') {
@@ -353,11 +353,18 @@
 			let info = response.data;
 			if(info.status == true) {
 				let json = info.data;
-				let visitorInfo = `單位名稱: ${json.name}, 負責人: ${json.principal}, 狀態: ${json.status}`;
-				$('#visitor_info').val(visitorInfo);
+				if(json.status=="已公開" || json.status=="已隱藏"){
+					let visitorInfo = `單位名稱: ${json.name}, 負責人: ${json.principal}, 狀態: ${json.status}`;
+					$('#visitor_info').val(visitorInfo);
+					callback(json);
+				}else {
+					alert(`目前社會企業狀態是已下架喔，請與社創中心聯絡`);
+					callback(null);
+				}
 			}else {
 				$('#visitor_info').val('');
 				alert('統編驗證錯誤');
+				callback(null);
 			}
 		})
 		.catch(function (error) {
@@ -372,7 +379,10 @@
 		let videoOption = document.getElementById("radio_record1").checked;
 		let transcriptOption = document.getElementById("radio_record3").checked;
 
-		checkTaxId();
+		checkTaxId( groupInfo => {
+			if(groupInfo==undefined) {
+				return;
+			}
 
 		if (confirm('送出後將無法再次更改，確定要送出表單嗎?')) {
 			const firstRadio = document.querySelector("#radio_record1").checked;
@@ -382,9 +392,6 @@
 			}
 
 
-			return;
-
-
 			if ($('#selectEnd').text() == '' || $('#selectStart').text() == '' || $('#visitor_name').val() == '' || $('#visitor_email').val() == '' || $('#visitor_description').val() == '' || $('#visitor_dept').val() == '') {
 
 			}
@@ -392,11 +399,22 @@
 
 			}
 			else {
-				// Request (POST https://aucal.pdis.nat.gov.tw/reserve)
+				let url = 'https://aucal.pdis.nat.gov.tw/reserve';
+				let description = $('#visitor_description').val() + "  記錄方式：" + ((typeof $("input:radio[name ='record']:checked").val()) === 'undefined' ? '未定' : $("input:radio[name ='record']:checked").val());
+				description = description + `\n\n單位名稱: ${groupInfo.name}, 負責人: ${groupInfo.principal}, 狀態: ${groupInfo.status}\nhttps://si.taiwan.gov.tw/Home/Org?Fid=${groupInfo.fid}`
+				let postData = {
+						"end": $('#selectEnd').text(),
+						"start": $('#selectStart').text(),
+						"username": $('#visitor_name').val(),
+						"email": $('#visitor_email').val(),
+						"mobile": $('#visitor_mobile').val(),
+						"description": description,
+						"department": groupInfo.name,
+						"name": $('#visitor_name').val() + " 預約"
+				};
+
 				$('#loading').css("display", "block")
 				$('.ui.modal.reserve').modal('hide');
-				let url = 'http://localhost:8082/reserve';
-				// let url = 'https://aucal.pdis.nat.gov.tw/reserve';
 				jQuery.ajax({
 					url: url,
 					type: "POST",
@@ -404,16 +422,7 @@
 						"Content-Type": "application/json; charset=utf-8",
 					},
 					contentType: "application/json",
-					data: JSON.stringify({
-						"end": $('#selectEnd').text(),
-						"start": $('#selectStart').text(),
-						"username": $('#visitor_name').val(),
-						"email": $('#visitor_email').val(),
-						"mobile": $('#visitor_mobile').val(),
-						"description": $('#visitor_description').val() + "  記錄方式：" + ((typeof $("input:radio[name ='record']:checked").val()) === 'undefined' ? '未定' : $("input:radio[name ='record']:checked").val()),
-						"department": $('#visitor_dept').val(),
-						"name": $('#visitor_name').val() + " 預約"
-					})
+					data: JSON.stringify(postData)
 				}).done(function (response, textStatus, jqXHR) {
 					if (response.message=="errors") {
 						toastr.error(JSON.parse(response.message), '預約失敗', { timeOut: 8000 })
@@ -429,7 +438,6 @@
 					toastr.error("伺服器忙碌中請再試一次!", 'Error', { timeOut: 5000 })
 				})
 				.always(function () {
-					/* ... */
 					$('#loading').css("display", "block");
 					BindData();
 				});
@@ -441,6 +449,7 @@
 
 
 
+		});
 
 
 	}
