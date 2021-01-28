@@ -285,12 +285,12 @@
 				<input type="text" id="visitor_dept" placeholder="拜會單位名稱 department of visitor">
 			</div> -->
 			<div class="field">
-				<label>單位統編/TaxID，用於驗證預約單位</label>
+				<label>單位統編/TaxID，用於驗證預約單位(8位數字)</label>
 				<input type="text" id="visitor_tax_id" placeholder="單位統編/TaxID">
 				<button onclick="checkTaxId()">驗證</button>
 			</div>
 			<div class="field">
-				<label>單位資訊(輸入統編後，請按下驗證按鈕)</label>
+				<label>單位資訊，系統會自動代入(輸入單位統編後，請按下驗證按鈕)</label>
 				<input type="text" disabled id="visitor_info" placeholder="單位資訊(輸入統編後會自動代入)">
 			</div>
 			<div class="field">
@@ -313,10 +313,17 @@
 				<label>拜會內容說明</label>
 				<textarea rows="4" id="visitor_description"></textarea>
 			</div>
-
+			<div class="field">
+			<label>請詳閱本辦拜會及紀錄公開原則：<a href='https://talk.pdis.nat.gov.tw/t/topic/44' target="_blank">https://talk.pdis.nat.gov.tw/t/topic/44</a>
+			</label>
+			<label>
+			<input type="radio" id='radio_agree' name="agree" value='agree'>
+			我已詳閱並同意此原則
+			</label>
+		</div>
 			<div class="field floatright">
-				<div class="ui clear button">取消 Cancel</div>
-				<div class="ui positive right labeled icon submit button" onclick="submitbooking()">
+				<div class="ui clear button" onclick="cancelBooking()">取消 Cancel</div>
+				<div class="ui positive right labeled icon submit button" onclick="submitBooking()">
 						送出 Submit
 					<i class="checkmark icon"></i>
 				</div>
@@ -336,6 +343,11 @@
 <script>
 	function checkTaxId(callback) {
 		// Make a request for a user with a given ID
+		let isAgreeRule = document.querySelector('#radio_agree').checked;
+		if(!isAgreeRule) {
+			alert('請詳閱本辦拜會及紀錄公開原則： 並勾選同意');
+			return;
+		}
 		var taxID = $('#visitor_tax_id').val();
 		if(taxID == '') {
 			alert("TaxId,統編不能為空值");
@@ -377,7 +389,7 @@
 			// always executed
 		});
 	}
-	function submitbooking() {
+	function submitBooking() {
 		let videoOption = document.getElementById("radio_record1").checked;
 		let transcriptOption = document.getElementById("radio_record3").checked;
 
@@ -432,8 +444,6 @@
 					else {
 						toastr.info(JSON.parse(response.message), '送出完成', { timeOut: 8000 })
 					}
-
-
 				})
 				.fail(function (jqXHR, textStatus, errorThrown) {
 					console.log("HTTP Request Failed");
@@ -454,6 +464,9 @@
 		});
 
 
+	}
+	function cancelBooking() {
+		$('.ui.modal.reserve').modal('hide');
 	}
 
 </script>
@@ -555,7 +568,7 @@
 	  <div class="description">
 		<p>
 			因應疫情發展，本辦未來將依照疫情指揮中心指引調整拜會形式。<br>
-			相關細節將公布於此行事曆:<a target="_blank" href="https://silofficehour.pdis.tw">silofficehour.pdis.tw</a>
+			相關細節將公布於此行事曆: <a target="_blank" href="https://silofficehour.pdis.tw">silofficehour.pdis.tw</a>
 			<br>已預約者將個別通知。
 		</p>
 	  </div>
