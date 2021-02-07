@@ -283,7 +283,7 @@
 			</div> -->
 			<div class="field">
 				<label>單位統編TaxID (用於驗證預約單位-8位數字)</label>
-				<input type="text" id="visitor_tax_id" placeholder="單位統編/TaxID">
+				<input type="number" maxlength="8" max="8" min="8" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" id="visitor_tax_id" placeholder="單位統編/TaxID">
 				<button onclick="checkTaxId()">驗證</button>
 			</div>
 			<div class="field">
