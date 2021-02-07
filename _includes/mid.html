@@ -369,6 +369,7 @@
 						$('#visitor_name').val(json.principal);
 						$('#visitor_mobile').val(json.phone);
 						$('#visitor_email').val(json.email);
+						alert('已自動代入預約者資料，送出前請確認');
 					}else {
 						callback(json);
 					}
@@ -400,27 +401,25 @@
 			if(groupInfo==undefined) {
 				return;
 			}
-		let isAgreeRule = document.querySelector('#radio_agree').checked;
-		if(!isAgreeRule) {
-			alert('請詳閱本辦拜會及紀錄公開原則： 並勾選同意');
-			return;
-		}
-
-		if (confirm('送出後將無法再次更改，確定要送出表單嗎?')) {
+			let isAgreeRule = document.querySelector('#radio_agree').checked;
+			if(!isAgreeRule) {
+				alert('請詳閱本辦拜會及紀錄公開原則： 並勾選同意');
+				return;
+			}
 			const firstRadio = document.querySelector("#radio_record1").checked;
 			const secondRadio = document.querySelector("#radio_record3").checked;
 			if((firstRadio | secondRadio) != 1) {
 				return 
 			}
-
-
 			if ($('#selectEnd').text() == '' || $('#selectStart').text() == '' || $('#visitor_name').val() == '' || $('#visitor_email').val() == '' || $('#visitor_description').val() == '' || $('#visitor_dept').val() == '') {
-
+				return;
 			}
 			else if(!videoOption && !transcriptOption) {
-
+				return;
 			}
-			else {
+
+			if (confirm('送出後將無法再次更改，確定要送出表單嗎?')) {
+		
 				let url = 'https://aucal.pdis.nat.gov.tw/reserve';
 				let description = $('#visitor_description').val() + "  記錄方式：" + ((typeof $("input:radio[name ='record']:checked").val()) === 'undefined' ? '未定' : $("input:radio[name ='record']:checked").val());
 				description = description + `\n\n單位名稱: ${groupInfo.name}, 負責人: ${groupInfo.principal}, 狀態: ${groupInfo.status}\nhttps://si.taiwan.gov.tw/Home/Org?Fid=${groupInfo.fid}`
@@ -437,39 +436,36 @@
 
 				$('#loading').css("display", "block")
 				$('.ui.modal.reserve').modal('hide');
+
 				jQuery.ajax({
 					url: url,
 					type: "POST",
 					headers: {
 						"Content-Type": "application/json; charset=utf-8",
-					},
-					contentType: "application/json",
-					data: JSON.stringify(postData)
-				}).done(function (response, textStatus, jqXHR) {
-					if (response.message=="errors") {
-						toastr.error(JSON.parse(response.message), '預約失敗', { timeOut: 8000 })
-					}
-					else {
-						toastr.info(JSON.parse(response.message), '送出完成', { timeOut: 8000 })
-					}
-				})
-				.fail(function (jqXHR, textStatus, errorThrown) {
-					console.log("HTTP Request Failed");
-					toastr.error("伺服器忙碌中請再試一次!", 'Error', { timeOut: 5000 })
-				})
-				.always(function () {
-					$('#loading').css("display", "block");
-					BindData();
-				});
-			}
-		}
-		else {
-			return;
-		}
+						},
+						contentType: "application/json",
+						data: JSON.stringify(postData)
+					}).done(function (response, textStatus, jqXHR) {
+						if (response.message=="errors") {
+							toastr.error(JSON.parse(response.message), '預約失敗', { timeOut: 8000 })
+						}
+						else {
+							toastr.info(JSON.parse(response.message), '送出完成', { timeOut: 8000 })
+						}
+					})
+					.fail(function (jqXHR, textStatus, errorThrown) {
+						console.log("HTTP Request Failed");
+						toastr.error("伺服器忙碌中請再試一次!", 'Error', { timeOut: 5000 })
+					})
+					.always(function () {
+						$('#loading').css("display", "block");
+						BindData();
+					});
+			} // end confirm('送出後將無法再次更改，確定要送出表單嗎?') 
 
 
 
-		});
+		}); // checkTaxId Callback
 
 
 	}
