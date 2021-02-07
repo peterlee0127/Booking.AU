@@ -276,22 +276,23 @@
 				<span id="selectStart"></span> ～
 				<div id="selectEnd"></div>
 			</div>
-			<div class="field">
-				<label>拜會人姓名</label>
-				<input type="text" id="visitor_name" placeholder="拜會人姓名">
-			</div>
+	
 			<!-- <div class="field">
 				<label>拜會單位名稱 department of visitor</label>
 				<input type="text" id="visitor_dept" placeholder="拜會單位名稱 department of visitor">
 			</div> -->
 			<div class="field">
-				<label>單位統編/TaxID，用於驗證預約單位(8位數字)</label>
+				<label>單位統編TaxID (用於驗證預約單位-8位數字)</label>
 				<input type="text" id="visitor_tax_id" placeholder="單位統編/TaxID">
 				<button onclick="checkTaxId()">驗證</button>
 			</div>
 			<div class="field">
-				<label>單位資訊，系統會自動代入(輸入單位統編後，請按下驗證按鈕)</label>
-				<input type="text" disabled id="visitor_info" placeholder="單位資訊(輸入統編後會自動代入)">
+				<label>單位資訊 Visitor Depart，系統會自動代入(輸入單位統編後，請按下驗證按鈕)</label>
+				<input type="text" disabled id="visitor_info" placeholder="">
+			</div>
+			<div class="field">
+				<label>拜會人姓名</label>
+				<input type="text" id="visitor_name" placeholder="拜會人姓名">
 			</div>
 			<div class="field">
 				<label>電子信箱 Email</label>
@@ -343,11 +344,7 @@
 <script>
 	function checkTaxId(callback) {
 		// Make a request for a user with a given ID
-		let isAgreeRule = document.querySelector('#radio_agree').checked;
-		if(!isAgreeRule) {
-			alert('請詳閱本辦拜會及紀錄公開原則： 並勾選同意');
-			return;
-		}
+
 		var taxID = $('#visitor_tax_id').val();
 		if(taxID == '') {
 			alert("TaxId,統編不能為空值");
@@ -366,9 +363,15 @@
 				let json = info.data;
 				if(json.status=="已公開" || json.status=="已隱藏"){
 					// 已公開／已隱藏／已下架
-					let visitorInfo = `單位名稱: ${json.name}, 負責人: ${json.principal}, 狀態: ${json.status}`;
+					let visitorInfo = `單位名稱: ${json.name}\t負責人: ${json.principal}\t組織狀態: ${json.status}`;
 					$('#visitor_info').val(visitorInfo);
-					callback(json);
+					if(callback==undefined) {
+						$('#visitor_name').val(json.principal);
+						$('#visitor_mobile').val(json.phone);
+						$('#visitor_email').val(json.email);
+					}else {
+						callback(json);
+					}
 				}else {
 					// 已下架
 					alert(`目前社會企業狀態是已下架，無法預約`);
@@ -397,6 +400,11 @@
 			if(groupInfo==undefined) {
 				return;
 			}
+		let isAgreeRule = document.querySelector('#radio_agree').checked;
+		if(!isAgreeRule) {
+			alert('請詳閱本辦拜會及紀錄公開原則： 並勾選同意');
+			return;
+		}
 
 		if (confirm('送出後將無法再次更改，確定要送出表單嗎?')) {
 			const firstRadio = document.querySelector("#radio_record1").checked;
