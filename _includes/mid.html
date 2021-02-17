@@ -315,12 +315,12 @@
 				<input type="text" id="visitor_dept" placeholder="拜會單位名稱 department of visitor">
 			</div> -->
 			<div class="field">
-				<label>單位統編TaxID（用於驗證預約單位-8位數字）</label>
-				<input type="number" maxlength="8" max="8" min="8" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" id="visitor_tax_id" placeholder="單位統編/TaxID">
+				<label>單位統編 TaxID（用於驗證預約單位-8位數字）</label>
+				<input type="number" maxlength="8" max="8" min="8" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" id="visitor_tax_id" placeholder="單位統編 TaxID">
 				<button onclick="checkTaxId()">驗證 Verify</button>
 			</div>
 			<div class="field">
-				<label>單位資訊 Visitor Depart（輸入單位統編後，請按下驗證按鈕）</label>
+				<label>單位資訊 Visitor Department（輸入單位統編後，請按下驗證按鈕）</label>
 				<input type="text" disabled id="visitor_info" placeholder="">
 			</div>
 			<div class="field">
@@ -348,7 +348,7 @@
 				<textarea rows="4" id="visitor_description" placeholder="拜會內容說明 Meeting Notes"></textarea>
 			</div>
 			<div class="field">
-			<label>請詳閱本辦拜會及紀錄公開原則 Visitor Rules:<a href='https://talk.pdis.nat.gov.tw/t/topic/44' target="_blank">https://talk.pdis.nat.gov.tw/t/topic/44</a>
+			<label>請詳閱本辦拜會及紀錄公開原則 Visitor Rules: <a href='https://talk.pdis.nat.gov.tw/t/topic/44' target="_blank">https://talk.pdis.nat.gov.tw/t/topic/44</a>
 			</label>
 			<label>
 			<br>
@@ -381,10 +381,10 @@
 
 		var taxID = $('#visitor_tax_id').val();
 		if(taxID == '') {
-			alert("TaxId,統編不能為空值");
+			alert("TaxId 統編不能為空值。Missing TaxId");
 			return;
 		}else if(/\d{8}/.test(taxID)==false) {
-			alert("TaxId,統編應為8位數字");
+			alert("TaxId,統編應為8位數字。TaxId is 8 digit number.");
 			return;
 		}
 		let url = `https://si.taiwan.gov.tw/api/orgs/data/${taxID}`;
@@ -403,13 +403,13 @@
 						$('#visitor_name').val(json.principal);
 						$('#visitor_mobile').val(json.phone);
 						$('#visitor_email').val(json.email);
-						alert('已自動代入預約者資料，送出前請確認');
+						alert('已自動代入預約者資料，送出前請確認。Please check information before you submit your reservation.');
 					}else {
 						callback(json);
 					}
 				}else {
 					// 已下架
-					alert(`目前社會企業狀態是已下架，無法預約`);
+					alert(`目前社會企業狀態是已下架，無法預約。The Department unlisted. You can't reserve`);
 					callback(null);
 				}
 			}else {
@@ -437,7 +437,7 @@
 			}
 			let isAgreeRule = document.querySelector('#radio_agree').checked;
 			if(!isAgreeRule) {
-				alert('請詳閱本辦拜會及紀錄公開原則： 並勾選同意');
+				alert('請詳閱本辦拜會及紀錄公開原則： 並勾選同意。\nCheck reservation rules and choose Agree.');
 				return;
 			}
 			const firstRadio = document.querySelector("#radio_record1").checked;
@@ -452,7 +452,7 @@
 				return;
 			}
 
-			if (confirm('送出後將無法再次更改，確定要送出表單嗎?')) {
+			if (confirm(`送出後將無法再次更改，確定要送出表單嗎?\nYou can't change your reservation later. Do you want to submit your reservation ?`)) {
 		
 				let url = 'https://aucal.pdis.nat.gov.tw/reserve';
 				let description = $('#visitor_description').val() + "  記錄方式：" + ((typeof $("input:radio[name ='record']:checked").val()) === 'undefined' ? '未定' : $("input:radio[name ='record']:checked").val());
@@ -521,7 +521,7 @@
 					rules: [
 						{
 							type: 'empty',
-							prompt: '請輸入姓名'
+							prompt: '請輸入姓名 Missing name'
 						}
 					]
 				}
@@ -531,7 +531,7 @@
 					rules: [
 						{
 							type: 'email',
-							prompt: '請輸入正確的email'
+							prompt: '請輸入正確的email Invalid email'
 						}
 					]
 				}
@@ -541,7 +541,7 @@
 					rules: [
 						{
 							type: 'empty',
-							prompt: '請輸入拜會者的單位'
+							prompt: '請輸入拜會者的單位 Missing visitor depart'
 						}
 					]
 				}
@@ -551,7 +551,7 @@
 					rules: [
 						{
 							type: 'empty',
-							prompt: '請輸入拜會內容說明'
+							prompt: '請輸入拜會內容說明 Missing meeting notes'
 						}
 					]
 				},
