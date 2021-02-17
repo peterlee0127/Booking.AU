@@ -44,7 +44,7 @@
 			
 				objEvent = {
 					date: moment(reservation.bufferedStartDate).format("YYYY-MM-DD"),
-					title: reservation.title=="已預約"?'已預約':reservation.title,
+					title: reservation.title=="已預約"?'已預約 Reserved':reservation.title,
 					start: moment.utc(reservation.bufferedStartDate).utcOffset(480),
 					end: moment.utc(reservation.bufferedEndDate).utcOffset(480),
 					color: '#fff',
@@ -75,14 +75,13 @@
 				availableTimespans.forEach(function(Timespan) {
 					if ($.inArray((moment.utc(moment(Wednesday).format("YYYY-MM-DD") + Timespan)).utcOffset(480).format(), eventTimes) == -1) {
 						objEvent = {
-							title: "可預約",
+							title: "可預約 Available",
 							start: moment.utc(moment(Wednesday).format("YYYY-MM-DD") + Timespan).utcOffset(480),
 							end: moment.utc(moment(Wednesday).format("YYYY-MM-DD") + Timespan).utcOffset(480).add(40, 'minutes'),
 							color: '#fff',
 							textColor: '#000',
 							available: true
 						}
-
 						objEvents.push(objEvent);
 					}
 				});
@@ -102,7 +101,7 @@
 						element.addClass("available")
 						element.find(".fc-title").addClass("available-bg")
 					}
-					else if (event.title == '已預約') {
+					else if (event.title == '已預約 Reserved') {
 						event.title = '已預約';
 						element.find(".fc-title").addClass("NonReserve-bg")
 					}
@@ -128,11 +127,11 @@
 				//   right: 'month,basicWeek,basicDay'
 				// },
 				buttonText: {
-					today: '今天',
-					month: '月',
-					week: '週',
-					day: '日',
-					list: '列表'
+					today: '今天 Today',
+					month: '月 Month',
+					week: '週 Week',
+					day: '日 Day',
+					list: '列表 List'
 				},
 				dayRender: function (date, cell) {
 					cell.html("<div class='dayTitle'>" + date.format('M/D') + "</div>");
@@ -166,20 +165,20 @@
 						$(".fc-next-button").prop('disabled', false);
 					}
 
-					$(".fc-prev-button").text("往前");
-					$(".fc-next-button").text("往後");
+					$(".fc-prev-button").text("往前 Back");
+					$(".fc-next-button").text("往後 Next");
 				},
 
 
 				monthNames: ['一月 January ', '二月 February',  '三月 March', '四月 April', '五月 May', '六月 June', '七月 July', '八月 August', '九月 September', '十月 October', '十一月 November', '十二月 December'],
-				dayNamesShort: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+				dayNamesShort: ['星期日 Sunday', '星期一 Monday', '星期二 Tuesday', '星期三 Wednesday', '星期四 Thursday', '星期五 Friday', '星期六 Saturday'],
 				navLinks: false,
 				defaultDate: new Date(),
 				defaultView: 'month',
 				height: 'auto',
 				eventLimit: 10,
 				eventBackgroundColor: '#074d71',
-				timeFormat: 'h:mmt',
+				timeFormat: 'H:mm',
 				hiddenDays: [1, 2, 4, 5, 6, 0],
 				editable: false,
 				// eventLimit: true, // allow "more" link when too many events
@@ -214,15 +213,46 @@
 						<div class="event">
 							<div class="content">
 								<div class="summary">
-										<p>本系統提供每週三唐鳳於社會創新實驗中心 office hour 的拜會預約，地址是<span style='color:grey;'>台北市大安區仁愛路三段99號</span>，預約開放時段為 10:00-17:00。為維護拜會品質，每次拜會以40分鐘為單位。</p>
-										<p>為維護拜會品質，自2021年4月1日起，唐鳳每週三office hour <font color="red">僅開放「已於社會創新平台登錄完成的社創組織」線上預約</font><strong>，不開放現場拜會。</strong></p>
-										<p>如欲拜會的單位，敬請先至平台登錄。<strong>同一單位拜會當日起三個月後方可再預約。</strong></p>
+
+										<p>
+											本系統提供每週三唐鳳於社會創新實驗中心 office hour 的拜會預約，地址為<font color="grey">台北市大安區仁愛路三段99號</font>，預約開放時段為 10:00-17:00。每次拜會以40分鐘為單位。同一單位拜會當日起三個月後方可再預約。
+											<br>
+											The system provides Digital Minister Audrey Tang’s office hour every Wednesday from 10:00 to 17:00 at Social Innovation Lab <font color="grey">(No. 99, Section 3, Renai Road, Daan District, Taipei City)</font>
+											<br>
+											Each meeting is 40 minutes in length.You can only make another appointment after three months from the date of the meeting with the same organization.
+										</p>
+										<p>
+											為維護拜會品質，唐鳳每週三office hour <font color="red">僅開放「已於社會創新平台登錄完成的社創組織」線上預約</font>，不開放現場拜會。
+											<br>
+											In order to maintain the quality of the meeting, the office hour will only open to <font color="red">"social innovation organizations that have registered on the Social Innovation Platform”</font>, and there is <strong>no more on-site meeting</strong>.
+										</p>
 										<br>
-										<p>欲查詢空檔可參見線上行事曆<a href='https://silofficehour.pdis.tw'> https://silofficehour.pdis.tw</a></p>
-										<p>本辦拜會原則: <a target="_blank" href="https://talk.pdis.nat.gov.tw/t/topic/44">talk.pdis.nat.gov.tw/t/topic/44</a></p>
+										<p>
+											如欲拜會，敬請先至平台登錄。
+											<br>
+											If you wish to attend the meeting, please make sure your organization is already registered on the platform. 
+										</p>
+										<p>
+											因行程多有變動，本辦保留調整此行事曆的權利，實際情況以現場情況為準，敬請見諒。
+											<br>
+											Due to changes in the schedule, the office reserves the right to adjust this calendar, the actual situation is subject to the on-site situation.
 										<br>
-										<p>因行程多有變動，本辦保留調整此行事曆的權利，實際情況以現場情況為準，敬請見諒。</p>
-										<p>如拜會有任何問題，請來信至 <a href='mailto:hello@pdis.tw'>hello@pdis.tw</a></p>
+										<p>
+											如拜會有任何問題，請來信 If you have any questions about the office hour, please contact us:
+											<a href='mailto:hello@pdis.tw'>hello@pdis.tw</a> 
+										</p>
+										<br>
+										<p>
+											本辦拜會原則 Principles for Handling Official Visits to Digital Minister, Audrey Tang: 
+											<a target="_blank" href='https://talk.pdis.nat.gov.tw/t/topic/44'>https://talk.pdis.nat.gov.tw/t/topic/44</a>
+										</p>
+										<p>
+											社會創新平台申請登錄 Social innovation platform application: <a target="_blank" href='https://si.taiwan.gov.tw/Home/Org_list'>https://si.taiwan.gov.tw/Home/Org_list/</a>
+										</p>
+										<br>
+										<p>
+											空檔可參見線上行事曆 Online calendar for vacancies:<a target="_blank" href='https://silofficehour.pdis.tw'> https://silofficehour.pdis.tw</a>
+										</p>
 									</div>
 							</div>
 						</div>
@@ -267,12 +297,15 @@
 		<div class="content">
 			<div class="ui error message"></div>
 			<div class="field" style="font-size:18px;font-weight: bold;">
-				為維護拜會品質，僅開放「已於社會創新平台登錄完成的社創組織」線上預約，不開放現場拜會。
+				為維護拜會品質，唐鳳每週三office hour<font color="red">僅開放「已於社會創新平台登錄完成的社創組織」</font>線上預約，不開放現場拜會。
+				In order to maintain the quality of the meeting, the office hour will only open to <font color="red">"social innovation organizations that have registered on the Social Innovation Platform”</font>, and there is <strong>no more on-site meeting</strong>.
 				<br>
-				如欲拜會的單位，敬請先至平台登錄。同一單位拜會當日起三個月後方可再預約。
+				<br>
+				如欲拜會的單位，敬請先至平台登錄。<strong>同一單位拜會當日起三個月後方可再預約</strong>。
+				If you wish to attend the meeting, please make sure your organization is already registered on the platform. You can only make another appointment after three months from the date of the meeting with the same organization. 
 			</div>
 			<div class="field">
-				<label>預約時段</label>
+				<label>預約時段 Time</label>
 				<span id="selectStart"></span> ～
 				<div id="selectEnd"></div>
 			</div>
@@ -282,16 +315,16 @@
 				<input type="text" id="visitor_dept" placeholder="拜會單位名稱 department of visitor">
 			</div> -->
 			<div class="field">
-				<label>單位統編TaxID (用於驗證預約單位-8位數字)</label>
+				<label>單位統編TaxID（用於驗證預約單位-8位數字）</label>
 				<input type="number" maxlength="8" max="8" min="8" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" id="visitor_tax_id" placeholder="單位統編/TaxID">
-				<button onclick="checkTaxId()">驗證</button>
+				<button onclick="checkTaxId()">驗證 Verify</button>
 			</div>
 			<div class="field">
-				<label>單位資訊 Visitor Depart，系統會自動代入(輸入單位統編後，請按下驗證按鈕)</label>
+				<label>單位資訊 Visitor Depart（輸入單位統編後，請按下驗證按鈕）</label>
 				<input type="text" disabled id="visitor_info" placeholder="">
 			</div>
 			<div class="field">
-				<label>拜會人姓名</label>
+				<label>拜會人姓名 Name</label>
 				<input type="text" id="visitor_name" placeholder="拜會人姓名">
 			</div>
 			<div class="field">
@@ -303,23 +336,24 @@
 				<input type="text" id="visitor_mobile" placeholder="聯絡電話 Phone Number">
 			</div>
 			<div class="field">
-				<label>紀錄方式</label>
-				<input type="radio" id='radio_record1' name="record" value='錄影'>
+				<label>紀錄方式 Record type</label>
+				<input type="radio" id='radio_record1' name="record" value='錄影' checked="checked">
 				<label style='display: inline-table;' for="radio_record1">錄影 Record Video</label>
 
 				<input type="radio" id='radio_record3' name="record" value='逐字稿'>
 				<label style='display: inline-table;' for="radio_record3">逐字稿 Transcript</label>
 			</div>
 			<div class="field">
-				<label>拜會內容說明</label>
-				<textarea rows="4" id="visitor_description"></textarea>
+				<label>拜會內容說明 Meeting Notes</label>
+				<textarea rows="4" id="visitor_description" placeholder="拜會內容說明 Meeting Notes"></textarea>
 			</div>
 			<div class="field">
-			<label>請詳閱本辦拜會及紀錄公開原則：<a href='https://talk.pdis.nat.gov.tw/t/topic/44' target="_blank">https://talk.pdis.nat.gov.tw/t/topic/44</a>
+			<label>請詳閱本辦拜會及紀錄公開原則 Visitor Rules:<a href='https://talk.pdis.nat.gov.tw/t/topic/44' target="_blank">https://talk.pdis.nat.gov.tw/t/topic/44</a>
 			</label>
 			<label>
+			<br>
 			<input type="radio" id='radio_agree' name="agree" value='agree'>
-			我已詳閱並同意此原則
+			我已詳閱並同意此原則 I agree.
 			</label>
 		</div>
 			<div class="field floatright">
@@ -447,15 +481,15 @@
 						data: JSON.stringify(postData)
 					}).done(function (response, textStatus, jqXHR) {
 						if (response.message=="errors") {
-							toastr.error(JSON.parse(response.message), '預約失敗', { timeOut: 8000 })
+							toastr.error(JSON.parse(response.message), '預約失敗 Fail', { timeOut: 8000 })
 						}
 						else {
-							toastr.info(JSON.parse(response.message), '送出完成', { timeOut: 8000 })
+							toastr.info(JSON.parse(response.message), '送出完成 Submit Success', { timeOut: 8000 })
 						}
 					})
 					.fail(function (jqXHR, textStatus, errorThrown) {
 						console.log("HTTP Request Failed");
-						toastr.error("伺服器忙碌中請再試一次!", 'Error', { timeOut: 5000 })
+						toastr.error("伺服器忙碌中請再試一次! Request Failed. Please check again.", 'Error', { timeOut: 5000 })
 					})
 					.always(function () {
 						$('#loading').css("display", "block");
@@ -569,17 +603,21 @@
 
   <div class="ui warning modal">
 	<div class="image content">
-	  <div class="description">
+	  <div class="">
 		<p>
 			因應疫情發展，本辦未來將依照疫情指揮中心指引調整拜會形式。<br>
 			相關細節將公布於此行事曆: <a target="_blank" href="https://silofficehour.pdis.tw">silofficehour.pdis.tw</a>
 			<br>已預約者將個別通知。
+			<br><br>
+			In light of the development of the epidemic, the Digital Minister Office will adjust the format of the meeting in accordance with the guidelines of the Central Epidemic Command Center.<br>
+			Relevant details will be posted on this calendar: <a target="_blank" href="https://silofficehour.pdis.tw">silofficehour.pdis.tw</a>
+			<br>Those who have made reservations will be notified individually.
 		</p>
 	  </div>
 	</div>
 	<div class="actions">
 	  <div class="ui positive right labeled icon button">
-		我知道了
+		關閉 Close
 	  </div>
 	</div>
   </div>
