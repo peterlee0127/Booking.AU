@@ -459,7 +459,7 @@
 		
 				let url = 'https://aucal.pdis.nat.gov.tw/reserve';
 				let description = $('#visitor_description').val() + "  記錄方式：" + ((typeof $("input:radio[name ='record']:checked").val()) === 'undefined' ? '未定' : $("input:radio[name ='record']:checked").val());
-				description = description + `\n\n單位名稱: ${groupInfo.name}, 負責人: ${groupInfo.principal}, 狀態: ${groupInfo.status}\nhttps://si.taiwan.gov.tw/Home/Org?Fid=${groupInfo.fid}`
+				description = description + `\n\n單位名稱: ${groupInfo.name}, 負責人: ${groupInfo.principal}, 狀態: ${groupInfo.status}\nhttps://si.taiwan.gov.tw/Home/Org?Fid=${groupInfo.fid} 統編:${groupInfo.taxId}`
 				let postData = {
 						"end": $('#selectEnd').text(),
 						"start": $('#selectStart').text(),
@@ -468,7 +468,9 @@
 						"mobile": $('#visitor_mobile').val(),
 						"description": description,
 						"department": groupInfo.name,
-						"name": $('#visitor_name').val() + " 預約"
+						"name": $('#visitor_name').val() + " 預約",
+						"taxId": groupInfo.taxId,
+						"needTaxId": true
 				};
 
 				$('#loading').css("display", "block")
