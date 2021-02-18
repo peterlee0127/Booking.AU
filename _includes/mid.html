@@ -430,9 +430,15 @@
 			// always executed
 		});
 	}
+	function clearAllInput() {
+		$('.content').find('input').val('');
+		$('.content').find('textarea').val('');
+	}
 	function submitBooking() {
 		let videoOption = document.getElementById("radio_record1").checked;
 		let transcriptOption = document.getElementById("radio_record3").checked;
+
+
 
 		checkTaxId( groupInfo => {
 			if(groupInfo==undefined) {
@@ -490,6 +496,7 @@
 						}
 						else {
 							toastr.info(JSON.parse(response.message), '送出完成 Submit Success', { timeOut: 8000 })
+							clearAllInput();
 						}
 					})
 					.fail(function (jqXHR, textStatus, errorThrown) {
@@ -510,6 +517,7 @@
 	}
 	function cancelBooking() {
 		$('.ui.modal.reserve').modal('hide');
+		clearAllInput();
 	}
 
 </script>
