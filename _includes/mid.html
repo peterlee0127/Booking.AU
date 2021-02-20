@@ -493,7 +493,7 @@
 					}).done(function (response, textStatus, jqXHR) {
 						if (response.message=="errors") {
 							toastr.error(JSON.parse(response.message), '預約失敗 Fail', { timeOut: 8000 })
-						}else if(response.message.inclueds('無法預約，90天內已有預約紀錄')) {
+						}else if(String(response.message).includes('無法預約，90天內已有預約紀錄')) {
 							// toastr.error(JSON.parse(response.message), response.message, { timeOut: 8000 })
 							alert(response.message);
 						}
