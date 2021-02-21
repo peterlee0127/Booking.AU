@@ -482,40 +482,37 @@
 				$('#loading').css("display", "block")
 				$('.ui.modal.reserve').modal('hide');
 
-				jQuery.ajax({
+				axios({
+					method: 'post',
 					url: url,
-					type: "POST",
-					headers: {
-						"Content-Type": "application/json; charset=utf-8",
-						},
-						contentType: "application/json",
-						data: JSON.stringify(postData)
-					}).done(function (response, textStatus, jqXHR) {
-						if (response.message=="errors") {
-							toastr.error(JSON.parse(response.message), '預約失敗 Fail', { timeOut: 8000 })
-						}else if(String(response.message).includes('無法預約，90天內已有預約紀錄')) {
-							// toastr.error(JSON.parse(response.message), response.message, { timeOut: 8000 })
-							alert(response.message);
-						}
-						else {
-							toastr.info(JSON.parse(response.message), '送出完成 Submit Success', { timeOut: 8000 })
-							clearAllInput();
-						}
-					})
-					.fail(function (jqXHR, textStatus, errorThrown) {
-						console.log("HTTP Request Failed");
-						toastr.error("伺服器忙碌中請再試一次! Request Failed. Please check again.", 'Error', { timeOut: 5000 })
-					})
-					.always(function () {
-						$('#loading').css("display", "block");
-						BindData();
-					});
+					data: postData
+				}).then(function (response) {
+					// success
+					let responseObj = response.data;
+					if (responseObj.message=="errors") {
+							toastr.error(responseObj.message, '預約失敗 Fail', { timeOut: 8000 })
+					}else if(String(responseObj.message).includes('無法預約，90天內已有預約紀錄')) {
+						alert(responseObj.message);
+					}
+					else {
+						toastr.info(responseObj.message, '送出完成 Submit Success', { timeOut: 8000 })
+						clearAllInput();
+					}
+				})
+				.catch(function (error) {
+					console.log(error);
+					console.log("HTTP Request Failed");
+					toastr.error("伺服器忙碌中請再試一次! Request Failed. Please check again.", 'Error', { timeOut: 5000 })
+				})
+				.then(function () {
+					// always executed
+					$('#loading').css("display", "block");
+					BindData();
+				});  
+			
 			} // end confirm('送出後將無法再次更改，確定要送出表單嗎?') 
 
-
-
 		}); // checkTaxId Callback
-
 
 	}
 	function cancelBooking() {
