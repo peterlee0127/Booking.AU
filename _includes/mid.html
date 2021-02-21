@@ -368,13 +368,11 @@
 				})
 					.done(function (response, textStatus, jqXHR) {
 						if (response.message=="errors") {
-							toastr.error(JSON.parse(response.message), '{{site.data.i18n[lang].SubmitFail}}', { timeOut: 8000 })
+							toastr.error(response.message, '{{site.data.i18n[lang].SubmitFail}}', { timeOut: 8000 })
 						}
 						else {
-							toastr.info(JSON.parse(response.message), '{{site.data.i18n[lang].SubmitSuccess}}', { timeOut: 8000 })
+							toastr.info(response.message, '{{site.data.i18n[lang].SubmitSuccess}}', { timeOut: 8000 })
 						}
-
-
 					})
 					.fail(function (jqXHR, textStatus, errorThrown) {
 						console.log("HTTP Request Failed");
