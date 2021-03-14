@@ -9,6 +9,7 @@
 		BindData();
 	});
 
+	const groupByKey = (list, key, {omitKey=false}) => list.reduce((hash, {[key]:value, ...rest}) => ({...hash, [value]:( hash[value] || [] ).concat(omitKey ? {...rest} : {[key]:value, ...rest})} ), {})
 
 	function BindData() {
 		var objEvents = [];
@@ -16,11 +17,11 @@
 		//兩天後~四個月
 		var Wednesdays = getWednesday(4, new Date(moment().add(2, 'days')).getDate());
 		//必須與取得預約事件的結束天數一致
-		// var bookingEndDay = new Date(moment().add(90, 'days'));
+		var bookingEndDay = new Date(moment().add(90, 'days'));
 		// set end day to 2021-03-31
-		var bookingEndDay = new Date("2021-06-01");
+		// var bookingEndDay = new Date("2021-06-01");
 
-		Wednesdays = Wednesdays.filter(function(value, index, arr){ return value <= bookingEndDay;});		
+		Wednesdays = Wednesdays.filter(function(value, index, arr){ return value <= bookingEndDay});	
 		let lastDate = Wednesdays.slice(-1)[0];
 		//取得行程
 		let url = "https://aucal.pdis.nat.gov.tw/getReserve";
@@ -32,166 +33,126 @@
 
 		$.ajax(settings).done(function (response) {
 
-			var objBooking = (response);
-			var objEvent = {
+			let reservations = response.reservations;
 
-			};
 
-			var eventTimes = [];
+			$('#loading').css("display", "none");
 
-			objBooking.reservations.forEach(function(reservation) {
+			let dateArray = [];
 
+			let eventTimes = [];
+			let objEvents = [];
 			
-				objEvent = {
-					date: moment(reservation.bufferedStartDate).format("YYYY-MM-DD"),
-					title: reservation.title=="已預約"?'已預約 Reserved':reservation.title,
-					start: moment.utc(reservation.bufferedStartDate).utcOffset(480),
-					end: moment.utc(reservation.bufferedEndDate).utcOffset(480),
-					color: '#fff',
-					textColor: '#000',
-					available: false
-				}
+			for(let i=0;i<reservations.length;i++) {
+				let reservation = reservations[i];
+				reservation.date = reservation.startDate.split("T")[0];
+
+				let objEvent = {
+						date: moment(reservation.bufferedStartDate).format("YYYY-MM-DD"),
+						title: reservation.title=="已預約"?'已預約 Reserved':reservation.title,
+						start: moment.utc(reservation.bufferedStartDate).utcOffset(480),
+						end: moment.utc(reservation.bufferedEndDate).utcOffset(480),
+						available: false,
+						description: reservation.description
+				};
 
 				//後臺預約起訖跨多個時段時 前臺顯示並計算出跨幾個已預約時段
 				let times = moment.utc(reservation.bufferedEndDate).valueOf()/1000-moment.utc(reservation.bufferedStartDate).valueOf()/1000;
 				let numOfSlot = Math.ceil(times/(60*60)); // 60min per slot
 
+	
+
+
 				for(let j = 0; j < numOfSlot; j++){
 					let nstartT = moment(objEvent.start).add(j, 'hours');
-
 					eventTimes.push(nstartT.format());
 					objEvents.push(objEvent);
 				}
+			}
 
-			});
+			
 
-			//可預約時段（UTC）
-			const availableTimespans = [
-				"T02:00:00+0000", "T03:00:00+0000", 
-				"T05:00:00+0000", "T06:00:00+0000", "T07:00:00+0000", "T08:00:00+0000"];
+				//可預約時段（UTC）
+				const availableTimespans = [
+					"T02:00:00+0000", "T03:00:00+0000", 
+					"T05:00:00+0000", "T06:00:00+0000", "T07:00:00+0000", "T08:00:00+0000"
+				];
 
-			//判斷是否可預約，加入可預約時段
-			Wednesdays.forEach(function(Wednesday) {
-				availableTimespans.forEach(function(Timespan) {
-					if ($.inArray((moment.utc(moment(Wednesday).format("YYYY-MM-DD") + Timespan)).utcOffset(480).format(), eventTimes) == -1) {
-						objEvent = {
-							title: "可預約 Available",
-							start: moment.utc(moment(Wednesday).format("YYYY-MM-DD") + Timespan).utcOffset(480),
-							end: moment.utc(moment(Wednesday).format("YYYY-MM-DD") + Timespan).utcOffset(480).add(40, 'minutes'),
-							color: '#fff',
-							textColor: '#000',
-							available: true
+			
+
+				//判斷是否可預約，加入可預約時段
+				Wednesdays.forEach(function(Wednesday) {
+					availableTimespans.forEach(function(Timespan) {
+						if ($.inArray((moment.utc(moment(Wednesday).format("YYYY-MM-DD") + Timespan)).utcOffset(480).format(), eventTimes) == -1) {
+							objEvent = {
+								title: "可預約 Available",
+								date: moment(Wednesday).format("YYYY-MM-DD"),
+								start: moment.utc(moment(Wednesday).format("YYYY-MM-DD") + Timespan).utcOffset(480),
+								end: moment.utc(moment(Wednesday).format("YYYY-MM-DD") + Timespan).utcOffset(480).add(40, 'minutes'),
+								available: true
+							}
+							objEvents.push(objEvent);
 						}
-						objEvents.push(objEvent);
-					}
+					});
 				});
-			});
 
+			let today = moment().add(-1, 'days')
+			
 
+			objEvents = groupByKey(objEvents, 'date', {omitKey:true});
 
-			//init
-			$('#calendar').fullCalendar('destroy');
-			$('#calendar').fullCalendar({
-				eventRender: function (event, element) {
+			let htmlTemplate = `<div>`
+            const keys = Object.keys(objEvents);
+			for(let i=0;i<keys.length;i++) {
+				let key = keys[i];
+
+				let groupDate = new Date(key);
+				if(groupDate>=today) {
+
 				
-					
-					if (event.available) {
 
-						element.find(".fc-title").append("<i class='edit icon ' style='padding-left:10px;'></i>");
-						element.addClass("available")
-						element.find(".fc-title").addClass("available-bg")
+				let group = objEvents[key];
+				htmlTemplate += `<h2>${key}</h2><br>`;
+				for(let j=0;j<group.length;j++) {
+					let event = group[j];
+					console.log(event);
+
+					let date = event.date;
+
+					let startHour = moment(event.start).format("HH:mm");
+					let endHour = moment(event.end).format("HH:mm");
+
+					let startTime = moment(event.start).format("YYYY-MM-DD HH:mm Z");
+					let endTime = moment(event.end).format("YYYY-MM-DD HH:mm Z");
+
+					if(event.available){
+						htmlTemplate += `<p id="${startTime}_${endTime}" onclick="showReserveUI(this.id)">${startHour}-${endHour}\t<font style="background-color: #9bf2f0;">${event.title}</font></p>`;	
+					}else if(event.title=='已預約 Reserved') {
+						htmlTemplate += `<p>${startHour}-${endHour}\t<font style="background-color: #ffc4cd;">${event.title}</font></p>`;
+					}else {
+						htmlTemplate += `<p>${startHour}-${endHour}\t<font style="background-color: #dedfe0;">${event.title}</font></p>`;	
 					}
-					else if (event.title == '已預約 Reserved') {
-						event.title = '已預約';
-						element.find(".fc-title").addClass("NonReserve-bg")
-					}
-					else {
+					htmlTemplate += `<hr>`;
+				}
 
-						element.find(".fc-title").addClass("Reserved-bg")
-					}
-				},
-				eventClick: function (calEvent, jsEvent, view) {
-
-					if (calEvent.available) {
-						$('.ui.modal.reserve').modal('show');
-						//$('.ui.form').form('reset');
-						$('.ui.error.message').text('');
-						$('#selectStart').text(moment(calEvent.start).format("YYYY-MM-DD HH:mm Z"));
-						$('#selectEnd').text(moment(calEvent.end).format("YYYY-MM-DD HH:mm Z"));
-
-					}
-				},
-				// header: {
-				//   left: 'prev,next today',
-				//   center: 'title',
-				//   right: 'month,basicWeek,basicDay'
-				// },
-				buttonText: {
-					today: '今天 Today',
-					month: '月 Month',
-					week: '週 Week',
-					day: '日 Day',
-					list: '列表 List'
-				},
-				dayRender: function (date, cell) {
-					cell.html("<div class='dayTitle'>" + date.format('M/D') + "</div>");
-					var minDate = moment();
-					if (date < minDate || date > moment(lastDate)) {
-						$(cell).parents('div.fc-row.fc-week.fc-widget-content').css('display', 'none');
-						// console.log($(cell).parents('div').find(".fc-row fc-week.fc-widget-content"))
-					}
-				},
-				viewRender: function (currentView) {
-					var minDate = moment(),
-						maxDate = lastDate; 
+				}
+			}
+			htmlTemplate += "</div>";
+			document.querySelector('#calendar').innerHTML = htmlTemplate;
 
 
-					// Past
-					if (minDate >= currentView.start && minDate <= currentView.end) {
-						$(".fc-prev-button").prop('disabled', true);
-						$(".fc-prev-button").addClass('fc-state-disabled');
-					}
-					else {
-						$(".fc-prev-button").removeClass('fc-state-disabled');
-						$(".fc-prev-button").prop('disabled', false);
-					}
-					// Future
-					if (maxDate >= currentView.start && maxDate <= currentView.end) {
-						$(".fc-next-button").prop('disabled', true);
-						$(".fc-next-button").addClass('fc-state-disabled');
-					} else {
-
-						$(".fc-next-button").removeClass('fc-state-disabled');
-						$(".fc-next-button").prop('disabled', false);
-					}
-
-					$(".fc-prev-button").text("往前 Back");
-					$(".fc-next-button").text("往後 Next");
-				},
-
-
-				monthNames: ['一月 January ', '二月 February',  '三月 March', '四月 April', '五月 May', '六月 June', '七月 July', '八月 August', '九月 September', '十月 October', '十一月 November', '十二月 December'],
-				dayNamesShort: ['星期日 Sunday', '星期一 Monday', '星期二 Tuesday', '星期三 Wednesday', '星期四 Thursday', '星期五 Friday', '星期六 Saturday'],
-				navLinks: false,
-				defaultDate: new Date(),
-				defaultView: 'month',
-				height: 'auto',
-				eventLimit: 10,
-				eventBackgroundColor: '#074d71',
-				timeFormat: 'H:mm',
-				hiddenDays: [1, 2, 4, 5, 6, 0],
-				editable: false,
-				// eventLimit: true, // allow "more" link when too many events
-				validRange: {
-					start: new Date()
-				},
-				events: objEvents
-			});
-
-			$('#loading').css("display", "none")
 		});
 	}
 
+
+	function showReserveUI(id) {
+		$('.ui.modal.reserve').modal('show');
+		$('.ui.error.message').text('');
+		let startTime = id.split("_")[0];
+		let endTime = id.split("_")[1];
+		$('#selectStart').text(startTime);
+		$('#selectEnd').text(endTime);
+	}
 
 
 </script>
@@ -266,11 +227,14 @@
 		</div>
 	</div>
 	<div class="ui grid">
+		<div class=" sixteen wide column">
+		<div class="ui  card" style="width: 100%;">
+			<div class="content">
 
-		<div class=" sixteen wide column ">
-			<div id="calendar" style="font-size: 16px "></div>
+				<div id="calendar" style="font-size: 16px "></div>
+			</div>
 		</div>
-
+	  </div>
 	</div>
 </div>
 
@@ -467,8 +431,8 @@
 				let description = $('#visitor_description').val() + "  記錄方式：" + ((typeof $("input:radio[name ='record']:checked").val()) === 'undefined' ? '未定' : $("input:radio[name ='record']:checked").val());
 				description = description + `\n\n單位名稱: ${groupInfo.name}, 負責人: ${groupInfo.principal}, 狀態: ${groupInfo.status}\nhttps://si.taiwan.gov.tw/Home/Org?Fid=${groupInfo.fid} 統編:${groupInfo.taxId}`
 				let postData = {
-						"end": $('#selectEnd').text(),
 						"start": $('#selectStart').text(),
+						"end": $('#selectEnd').text(),
 						"username": $('#visitor_name').val(),
 						"email": $('#visitor_email').val(),
 						"mobile": $('#visitor_mobile').val(),
