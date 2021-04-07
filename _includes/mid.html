@@ -111,7 +111,7 @@
 
 				
 
-				let group = objEvents[key];
+				let group = objEvents[key].sort();
 				htmlTemplate += `<h2>${key}</h2><br>`;
 				for(let j=0;j<group.length;j++) {
 					let event = group[j];
