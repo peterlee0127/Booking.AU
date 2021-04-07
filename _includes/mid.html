@@ -340,7 +340,7 @@
 			</div>
 			<div class="field">
 				<label>紀錄方式 Record type</label>
-				<input type="radio" id='radio_record1' name="record" value='錄影' checked="checked">
+				<input type="radio" id='radio_record1' name="record" value='錄影'>
 				<label style='display: inline-table;' for="radio_record1">錄影 Record Video</label>
 
 				<input type="radio" id='radio_record3' name="record" value='逐字稿'>
@@ -424,7 +424,9 @@
 				// can't find by taxId
 				$('#visitor_info').val('');
 				alert('統編驗證錯誤');
-				callback(null);
+				if(callback!=undefined) {
+					callback(null);
+				}
 			}
 		})
 		.catch(function (error) {
@@ -470,7 +472,7 @@
 		
 				let url = 'https://aucal.pdis.nat.gov.tw/reserve';
 				let description = $('#visitor_description').val() + "  記錄方式：" + ((typeof $("input:radio[name ='record']:checked").val()) === 'undefined' ? '未定' : $("input:radio[name ='record']:checked").val());
-				description = description + `\n\n單位名稱: ${groupInfo.name}, 負責人: ${groupInfo.principal}, 狀態: ${groupInfo.status}\nhttps://si.taiwan.gov.tw/Home/Org?Fid=${groupInfo.fid} 統編:${groupInfo.taxId}`
+				description = description + ` \n\n單位名稱: ${groupInfo.name}, 負責人: ${groupInfo.principal}, 狀態: ${groupInfo.status}\nhttps://si.taiwan.gov.tw/Home/Org?Fid=${groupInfo.fid} 統編:${groupInfo.taxId}`
 				let postData = {
 						"end": $('#selectEnd').text(),
 						"start": $('#selectStart').text(),
